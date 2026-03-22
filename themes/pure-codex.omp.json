@@ -39,7 +39,7 @@
             "fetch_upstream_icon": true
           },
           "style": "plain",
-          "template": "{{ .UpstreamIcon }}{{ .HEAD }}{{ if .Working.Changed }}<#F85149>*</>{{ end }}{{ if .Staging.Changed }} +{{ end }} ",
+          "template": "{{ .UpstreamIcon }} {{ .HEAD }}{{ if .Working.Changed }} <#F85149>*</>{{ end }}{{ if .Staging.Changed }} +{{ end }} ",
           "type": "git"
         }
       ],
@@ -47,6 +47,7 @@
     },
     {
       "alignment": "right",
+      "overflow": "hide",
       "segments": [
         {
           "foreground": "#6E7681",
@@ -62,7 +63,8 @@
           "foreground": "#D29922",
           "style": "plain",
           "template": "MEM: {{ round .PhysicalPercentUsed .Precision }}% ",
-          "type": "sysinfo"
+          "type": "sysinfo",
+          "cache_duration": "5s"
         }
       ],
       "type": "prompt"

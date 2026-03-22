@@ -7,7 +7,7 @@
         {
           "foreground": "#D97757",
           "style": "plain",
-          "template": " ",
+          "template": "🐱 ",
           "type": "text"
         },
         {
@@ -39,7 +39,7 @@
             "fetch_upstream_icon": true
           },
           "style": "plain",
-          "template": "{{ .UpstreamIcon }}{{ .HEAD }}{{ if .Working.Changed }}<#D29922>*</>{{ end }}{{ if .Staging.Changed }} +{{ end }} ",
+          "template": "{{ .UpstreamIcon }} {{ .HEAD }}{{ if .Working.Changed }} <#D29922>*</>{{ end }}{{ if .Staging.Changed }} +{{ end }} ",
           "type": "git"
         }
       ],
@@ -47,6 +47,7 @@
     },
     {
       "alignment": "right",
+      "overflow": "hide",
       "segments": [
         {
           "foreground": "#6B6B6B",
@@ -62,7 +63,8 @@
           "foreground": "#9A9B8C",
           "style": "plain",
           "template": "MEM: {{ round .PhysicalPercentUsed .Precision }}% ",
-          "type": "sysinfo"
+          "type": "sysinfo",
+          "cache_duration": "5s"
         }
       ],
       "type": "prompt"
