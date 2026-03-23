@@ -12,13 +12,12 @@ A minimal PowerShell configuration framework for a beautiful terminal experience
 - File/folder icons with Terminal-Icons module
 - Windows Terminal color scheme integration
 - **Smart Tab Completion** - Menu-style completions with visual selection
-- **Command Prediction** - AI-like suggestions based on your command history
 - **History Search** - Navigate through history with Up/Down arrows, filtered by what you've typed
+- **Command Prediction** - AI-like suggestions based on your command history (PowerShell 7+ only)
 
 ## Requirements
 
-- **PowerShell 7+ (Strongly Recommended)** - Experience the full potential with smoother performance, richer colors, and enhanced interactive features
-- Windows PowerShell 5.1 is supported but may not deliver the optimal visual effects and seamless interactive experience
+- **PowerShell 7+ (Required)** - Essential for optimal performance, rich colors, and full interactive features including command prediction
 - Run as Administrator (for font installation)
 
 ## Installation
