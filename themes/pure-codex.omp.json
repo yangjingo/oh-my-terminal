@@ -24,6 +24,12 @@
           "style": "plain",
           "template": "{{ .Path }} ",
           "type": "path"
+        },
+        {
+          "foreground": "#73D0FF",
+          "style": "plain",
+          "template": "({{ .Venv }}) ",
+          "type": "python"
         }
       ],
       "type": "prompt"
