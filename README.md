@@ -1,6 +1,6 @@
-# Oh My PowerShell
+# Oh My Terminal
 
-A minimal PowerShell configuration framework for a beautiful terminal experience.
+A minimal terminal configuration framework for a beautiful shell experience. Works on **Windows (PowerShell)** and **Linux/macOS (Bash)**.
 
 [中文文档](./README-ZH.md)
 
@@ -9,16 +9,21 @@ A minimal PowerShell configuration framework for a beautiful terminal experience
 - Easy installation with automatic dependency management
 - Beautiful prompt themes powered by Oh My Posh
 - Automatic Nerd Font installation (supports China mirror)
-- File/folder icons with Terminal-Icons module
-- Windows Terminal color scheme integration
-- **Smart Tab Completion** - Menu-style completions with visual selection
+- **Windows**: File/folder icons with Terminal-Icons module, Windows Terminal color scheme integration
+- **Linux/macOS**: Bash history search, automatic font and theme setup
+- **Smart Tab Completion** - Menu-style completions with visual selection (PowerShell)
 - **History Search** - Navigate through history with Up/Down arrows, filtered by what you've typed
 - **Command Prediction** - AI-like suggestions based on your command history (PowerShell 7+ only)
 
 ## Requirements
 
-- **PowerShell 7+ (Required)** - Essential for optimal performance, rich colors, and full interactive features including command prediction
+### Windows
+- **PowerShell 7+ (Required)** - Essential for optimal performance, rich colors, and full interactive features
 - Run as Administrator (for font installation)
+
+### Linux / macOS
+- **Bash 4+**
+- **curl** and **unzip** (usually pre-installed)
 
 ## Installation
 
@@ -27,23 +32,50 @@ A minimal PowerShell configuration framework for a beautiful terminal experience
 > **The easiest way to get started!** Use an AI agent (like Claude) to install automatically:
 
 ```
-clone this repo and help me install the claude style oh-my-posh theme, https://github.com/yangjingo/oh-my-powershell
+clone this repo and help me install the claude style oh-my-posh theme, https://github.com/yangjingo/oh-my-terminal
 ```
 
 The AI agent will handle the entire installation process for you - sit back and enjoy!
 
-### Manual Installation
+### Linux / macOS
+
+```bash
+# Clone the repository
+git clone https://github.com/yangjingo/oh-my-terminal.git
+
+# Run the installation script
+cd oh-my-terminal
+bash install.sh
+```
+
+#### Installation Options
+
+```bash
+# Auto-detect network (default)
+bash install.sh
+
+# Force China mirror mode
+bash install.sh --cn
+
+# Skip font installation
+bash install.sh --skip-font
+
+# Silent mode
+bash install.sh --silent
+```
+
+### Windows
 
 ```powershell
 # Clone the repository
-git clone https://github.com/yangjingo/oh-my-powershell.git
+git clone https://github.com/yangjingo/oh-my-terminal.git
 
 # Run the installation script (as Administrator)
-cd oh-my-powershell
+cd oh-my-terminal
 ./install.ps1
 ```
 
-### Installation Options
+#### Installation Options
 
 ```powershell
 # Auto-detect network (default)
@@ -69,8 +101,13 @@ Warm terracotta palette inspired by Claude Code's aesthetic.
 
 ![Claude Theme Preview](./asserts/1shell-claude.png)
 
+```bash
+# Bash
+eval "$(oh-my-posh init bash --config '/path/to/themes/1shell-claude.omp.json')"
+```
 ```powershell
-oh-my-posh init pwsh --config 'C:\path\to\oh-my-powershell\themes\1shell-claude.omp.json' | Invoke-Expression
+# PowerShell
+oh-my-posh init pwsh --config 'C:\path\to\themes\1shell-claude.omp.json' | Invoke-Expression
 ```
 
 ### Codex Theme
@@ -79,14 +116,24 @@ Tech-focused palette with vibrant colors for high contrast.
 
 ![Codex Theme Preview](./asserts/pure-codex.png)
 
+```bash
+# Bash
+eval "$(oh-my-posh init bash --config '/path/to/themes/pure-codex.omp.json')"
+```
 ```powershell
-oh-my-posh init pwsh --config 'C:\path\to\oh-my-powershell\themes\pure-codex.omp.json' | Invoke-Expression
+# PowerShell
+oh-my-posh init pwsh --config 'C:\path\to\themes\pure-codex.omp.json' | Invoke-Expression
 ```
 
 ### Switch Themes
 
-Copy the example profile to your PowerShell profile:
+**Linux / macOS** — edit your `~/.bashrc`:
+```bash
+# Change the theme path in the oh-my-posh init line
+eval "$(oh-my-posh init bash --config '$HOME/.config/oh-my-terminal/themes/pure-codex.omp.json')"
+```
 
+**Windows** — edit your PowerShell profile:
 ```powershell
 # View your profile path
 $PROFILE
@@ -95,25 +142,22 @@ $PROFILE
 Copy-Item ".\profile.example.ps1" $PROFILE -Force
 ```
 
-Or edit manually:
-
-```powershell
-notepad $PROFILE
-```
-
 ## Files
 
 ```
-oh-my-powershell/
-├── install.ps1                 # Installation script
-├── profile.example.ps1         # Example PowerShell profile template
+oh-my-terminal/
+├── install.sh                  # Linux/macOS installation script
+├── install.ps1                 # Windows PowerShell installation script
+├── profile.example.sh          # Bash profile template
+├── profile.example.ps1         # PowerShell profile template
+├── SKILL.md                    # AI Agent installation guide
 ├── themes/
 │   ├── 1shell-claude.omp.json  # Claude theme (warm terracotta palette)
 │   └── pure-codex.omp.json     # Codex theme (tech-focused vibrant colors)
 ├── asserts/
 │   ├── 1shell-claude.png       # Claude theme preview
 │   └── pure-codex.png          # Codex theme preview
-├── oh-my-powershell.json       # Scoop manifest for package distribution
+├── oh-my-terminal.json       # Scoop manifest for package distribution
 ├── LICENSE
 ├── README.md
 └── README-ZH.md                # Chinese documentation
@@ -123,12 +167,14 @@ oh-my-powershell/
 
 | File | Description |
 |------|-------------|
-| `install.ps1` | Main installation script. Installs oh-my-posh, git, FiraCode Nerd Font, Terminal-Icons module, and configures Windows Terminal. |
+| `install.sh` | Linux/macOS installation script. Installs oh-my-posh, FiraCode Nerd Font, and configures bash. |
+| `install.ps1` | Windows installation script. Installs oh-my-posh, git, FiraCode Nerd Font, Terminal-Icons module, and configures Windows Terminal. |
+| `profile.example.sh` | Bash profile template. Append to `~/.bashrc` and customize as needed. |
 | `profile.example.ps1` | PowerShell profile template. Copy to `$PROFILE` location and customize as needed. |
-| `themes/1shell-claude.omp.json` | Claude theme with warm terracotta colors inspired by Claude Code's aesthetic. |
-| `themes/pure-codex.omp.json` | Codex theme with vibrant tech-focused colors for high contrast readability. |
+| `SKILL.md` | Instructions for AI agents to install this framework automatically. |
+| `themes/` | Oh My Posh JSON theme files. Compatible with all platforms. |
 | `asserts/` | Theme preview screenshots. |
-| `oh-my-powershell.json` | Scoop manifest for installing via `scoop install`. |
+| `oh-my-terminal.json` | Scoop manifest for installing via `scoop install`. |
 
 ## License
 

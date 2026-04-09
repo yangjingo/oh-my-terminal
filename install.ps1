@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    oh-my-powershell installation script
+    oh-my-terminal installation script
 .DESCRIPTION
     Automatically configures Windows Terminal, installs Nerd Fonts, and sets up Oh My Posh.
 .PARAMETER ConfigMode
@@ -39,7 +39,7 @@ elseif ($ConfigMode -eq "Auto") {
 
 # Base URL
 $repoUser = "yangjingo"
-$repoName = "oh-my-powershell"
+$repoName = "oh-my-terminal"
 $rawUrl = "https://raw.githubusercontent.com/$repoUser/$repoName/main"
 if ($isCN) { $rawUrl = "https://ghproxy.com/$rawUrl" }
 
@@ -231,7 +231,7 @@ if (Test-Path $settingsPath) {
 # --- 6. PowerShell Profile Activation ---
 $themePath = "$PSScriptRoot\themes\1shell-claude.omp.json"
 $profileContent = @"
-# <oh-my-powershell>
+# <oh-my-terminal>
 oh-my-posh init pwsh --config '$themePath' | Invoke-Expression
 Import-Module Terminal-Icons
 
@@ -246,7 +246,7 @@ Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 if (`$PSVersionTable.PSVersion.Major -ge 7) {
     Set-PSReadLineOption -PredictionSource History
 }
-# </oh-my-powershell>
+# </oh-my-terminal>
 "@
 
 if (-not (Test-Path $PROFILE)) {
@@ -254,7 +254,7 @@ if (-not (Test-Path $PROFILE)) {
 }
 
 $oldProfile = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
-if ($oldProfile -notlike "*oh-my-powershell*") {
+if ($oldProfile -notlike "*oh-my-terminal*") {
     Add-Content -Path $PROFILE -Value "`n$profileContent"
     Write-Host "PowerShell Profile updated." -ForegroundColor Green
 } else {

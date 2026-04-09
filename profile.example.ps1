@@ -4,8 +4,8 @@
 # fnm (Fast Node Manager) - uncomment if you use fnm
 # fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
 
-# <oh-my-powershell>
-oh-my-posh init pwsh --config '$env:USERPROFILE\oh-my-powershell\themes\1shell-claude.omp.json' | Invoke-Expression
+# <oh-my-terminal>
+oh-my-posh init pwsh --config '$env:USERPROFILE\oh-my-terminal\themes\1shell-claude.omp.json' | Invoke-Expression
 Import-Module Terminal-Icons
 
 # PSReadLine 自动补全和历史搜索
@@ -19,4 +19,4 @@ Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 if ($PSVersionTable.PSVersion.Major -ge 7) {
     Set-PSReadLineOption -PredictionSource History
 }
-# </oh-my-powershell>
+# </oh-my-terminal>

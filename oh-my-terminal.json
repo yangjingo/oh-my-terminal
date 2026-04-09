@@ -1,9 +1,9 @@
 {
     "version": "1.0.0",
-    "description": "A minimal PowerShell & Windows Terminal beautification solution",
-    "homepage": "https://github.com/yangjingo/oh-my-powershell",
+    "description": "A minimal terminal beautification framework for PowerShell & Bash",
+    "homepage": "https://github.com/yangjingo/oh-my-terminal",
     "license": "MIT",
-    "url": "https://github.com/yangjingo/oh-my-powershell/archive/refs/heads/main.zip",
+    "url": "https://github.com/yangjingo/oh-my-terminal/archive/refs/heads/main.zip",
     "depends": [
         "oh-my-posh",
         "git"
