@@ -64,7 +64,7 @@ Two themes are available in `themes/`:
 
 | Theme | File | Style |
 |-------|------|-------|
-| **Claude** (default) | `1shell-claude.omp.json` | Warm terracotta (#D97757), cat emoji 🐱 prefix |
+| **Claude** (default) | `1shell-claude.omp.json` | Warm terracotta (#D97757), crab emoji 🦀 prefix |
 | **Codex** | `pure-codex.omp.json` | Tech blue/green (#58A6FF/#7EE787), atom emoji ⚛️ prefix |
 
 Both themes include: user, path, git status, python venv, execution time, memory usage, and command status segments.
