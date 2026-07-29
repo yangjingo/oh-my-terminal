@@ -7,6 +7,7 @@
 #   ./install.sh              # Auto-detect network
 #   ./install.sh --cn         # Force China mirror
 #   ./install.sh --skip-font  # Skip font installation
+#   ./install.sh --skip-ble   # Skip ble.sh installation (Linux only)
 #   ./install.sh --silent     # Silent mode
 #
 
@@ -15,6 +16,7 @@ set -euo pipefail
 # --- Defaults ---
 CN_MIRROR=false
 SKIP_FONT=false
+SKIP_BLE=false
 SILENT=false
 
 # --- Parse Args ---
@@ -22,12 +24,14 @@ for arg in "$@"; do
     case "$arg" in
         --cn)        CN_MIRROR=true ;;
         --skip-font) SKIP_FONT=true ;;
+        --skip-ble)  SKIP_BLE=true ;;
         --silent)    SILENT=true ;;
         --help|-h)
-            echo "Usage: $0 [--cn] [--skip-font] [--silent]"
+            echo "Usage: $0 [--cn] [--skip-font] [--skip-ble] [--silent]"
             echo ""
             echo "  --cn         Force China mirror"
             echo "  --skip-font  Skip Nerd Font installation"
+            echo "  --skip-ble   Skip ble.sh installation (Linux only)"
             echo "  --silent     Silent installation"
             exit 0
             ;;
@@ -174,7 +178,45 @@ install_themes() {
 
 install_themes
 
-# --- 5. Configure Bash Profile ---
+# --- 5. Install ble.sh (Linux only) ---
+install_blesh() {
+    [ "$(uname -s)" = "Linux" ] || return
+
+    local blesh_file="$HOME/.local/share/blesh/ble.sh"
+    if [ -f "$blesh_file" ]; then
+        ok "ble.sh already installed: $blesh_file"
+        return
+    fi
+
+    if ! command -v tar &>/dev/null || ! command -v xz &>/dev/null; then
+        warn "ble.sh requires tar and xz; skipping installation."
+        warn "Install them and run the installer again, or use --skip-ble to suppress this message."
+        return
+    fi
+
+    info "Installing ble.sh for Bash history suggestions and completion..."
+    local archive_url="https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly.tar.xz"
+    if [ "$CN_MIRROR" = true ]; then
+        archive_url="https://ghproxy.net/${archive_url}"
+    fi
+
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    if curl -fSL --connect-timeout 30 -o "$tmpdir/ble-nightly.tar.xz" "$archive_url" \
+        && tar -xJf "$tmpdir/ble-nightly.tar.xz" -C "$tmpdir" \
+        && bash "$tmpdir/ble-nightly/ble.sh" --install "$HOME/.local/share"; then
+        ok "ble.sh installed successfully."
+    else
+        warn "ble.sh installation failed. You can retry the installer later."
+    fi
+    rm -rf "$tmpdir"
+}
+
+if [ "$SKIP_BLE" = false ]; then
+    install_blesh
+fi
+
+# --- 6. Configure Bash Profile ---
 configure_bash() {
     local bashrc="$HOME/.bashrc"
     local theme_dir="$HOME/.config/oh-my-terminal/themes"
@@ -186,9 +228,10 @@ configure_bash() {
 export PATH=\"\$PATH:\$HOME/.local/bin\"
 eval \"\$(oh-my-posh init bash --config '${theme_path}')\"
 
-# Bash history search (up/down arrows filter by prefix)
-bind '\"\\e[A\": history-search-backward'
-bind '\"\\e[B\": history-search-forward'
+# Bash Line Editor: history suggestions and enhanced completion (Linux only)
+if [ \"\$(uname -s)\" = \"Linux\" ] && [ -f \"\$HOME/.local/share/blesh/ble.sh\" ]; then
+    source -- \"\$HOME/.local/share/blesh/ble.sh\"
+fi
 # </oh-my-terminal>"
 
     if grep -q "oh-my-terminal" "$bashrc" 2>/dev/null; then

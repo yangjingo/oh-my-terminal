@@ -8,7 +8,8 @@
 - 基于 Oh My Posh 的美观提示符主题
 - 自动安装 Nerd Font 字体（支持国内镜像）
 - **Windows**: Terminal-Icons 模块提供文件/文件夹图标，Windows Terminal 配色方案集成
-- **Linux/macOS**: Bash 历史搜索，自动安装字体和主题
+- **Linux**: 使用 `ble.sh` 提供历史建议和增强 Bash 补全，自动安装字体和主题
+- **macOS**: Bash 历史搜索，自动安装字体和主题
 - **智能 Tab 补全** - 菜单式补全，可视化选择（PowerShell）
 - **历史记忆搜索** - 上下箭头智能过滤，输入几个字符即可快速定位历史命令
 - **命令联想预测** - 基于历史记录的智能提示（仅 PowerShell 7+ 支持）
@@ -22,6 +23,7 @@
 ### Linux / macOS
 - **Bash 4+**
 - **curl** 和 **unzip**（通常系统自带）
+- **仅 Linux**：安装 `ble.sh` 历史补全包需要 `tar` 和 `xz`
 
 ## 安装
 
@@ -57,6 +59,9 @@ bash install.sh --cn
 
 # 跳过字体安装
 bash install.sh --skip-font
+
+# 跳过 ble.sh 安装（仅 Linux）
+bash install.sh --skip-ble
 
 # 静默安装
 bash install.sh --silent
@@ -181,5 +186,6 @@ oh-my-terminal/
 
 - 灵感来源于 [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 - 基于 [Oh My Posh](https://ohmyposh.dev) 构建
+- Linux 历史补全由 [ble.sh](https://github.com/akinomyoga/ble.sh) 提供
 - 图标来自 [Terminal-Icons](https://github.com/devblackops/Terminal-Icons)
 - 字体来自 [Nerd Fonts](https://www.nerdfonts.com)

@@ -6,7 +6,8 @@ This document guides AI agents (Claude, Codex, etc.) through installing the oh-m
 
 oh-my-terminal provides beautiful Oh My Posh themes for terminal prompts. It supports:
 - **Windows**: PowerShell 7+ with Oh My Posh, Terminal-Icons, and Windows Terminal integration
-- **Linux/macOS**: Bash with Oh My Posh, Nerd Fonts, and history search
+- **Linux**: Bash with Oh My Posh, Nerd Fonts, and `ble.sh` history suggestions/completion
+- **macOS**: Bash with Oh My Posh, Nerd Fonts, and history search
 
 ## Detection
 
@@ -32,6 +33,7 @@ bash install.sh --cn
 The installer will:
 - Download Oh My Posh binary to `~/.local/bin/`
 - Install FiraCode Nerd Font to `~/.local/share/fonts/`
+- On Linux, install `ble.sh` to `~/.local/share/blesh/` for history suggestions and enhanced completion
 - Copy themes to `~/.config/oh-my-terminal/themes/`
 - Append configuration to `~/.bashrc`
 
@@ -80,9 +82,8 @@ If the user prefers manual setup or the installer fails:
 export PATH="$PATH:$HOME/.local/bin"
 eval "$(oh-my-posh init bash --config '/path/to/themes/1shell-claude.omp.json')"
 
-# History search with up/down arrows
-bind '"\e[A": history-search-backward'
-bind '"\e[B": history-search-forward'
+# Linux only: ble.sh history suggestions and enhanced completion
+source -- "$HOME/.local/share/blesh/ble.sh"
 ```
 
 ### PowerShell ($PROFILE)

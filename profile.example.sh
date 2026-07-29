@@ -8,7 +8,8 @@
 export PATH="$PATH:$HOME/.local/bin"
 eval "$(oh-my-posh init bash --config '$HOME/.config/oh-my-terminal/themes/1shell-claude.omp.json')"
 
-# Bash history search (up/down arrows filter by prefix)
-bind '"\e[A": history-search-backward'
-bind '"\e[B": history-search-forward'
+# Bash Line Editor: history suggestions and enhanced completion (Linux only)
+if [ "$(uname -s)" = "Linux" ] && [ -f "$HOME/.local/share/blesh/ble.sh" ]; then
+    source -- "$HOME/.local/share/blesh/ble.sh"
+fi
 # </oh-my-terminal>

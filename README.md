@@ -10,7 +10,8 @@ A minimal terminal configuration framework for a beautiful shell experience. Wor
 - Beautiful prompt themes powered by Oh My Posh
 - Automatic Nerd Font installation (supports China mirror)
 - **Windows**: File/folder icons with Terminal-Icons module, Windows Terminal color scheme integration
-- **Linux/macOS**: Bash history search, automatic font and theme setup
+- **Linux**: `ble.sh` history suggestions and enhanced Bash completion, automatic font and theme setup
+- **macOS**: Bash history search, automatic font and theme setup
 - **Smart Tab Completion** - Menu-style completions with visual selection (PowerShell)
 - **History Search** - Navigate through history with Up/Down arrows, filtered by what you've typed
 - **Command Prediction** - AI-like suggestions based on your command history (PowerShell 7+ only)
@@ -24,6 +25,7 @@ A minimal terminal configuration framework for a beautiful shell experience. Wor
 ### Linux / macOS
 - **Bash 4+**
 - **curl** and **unzip** (usually pre-installed)
+- **Linux only**: `tar` and `xz` for the `ble.sh` history-completion package
 
 ## Installation
 
@@ -59,6 +61,9 @@ bash install.sh --cn
 
 # Skip font installation
 bash install.sh --skip-font
+
+# Skip ble.sh installation (Linux only)
+bash install.sh --skip-ble
 
 # Silent mode
 bash install.sh --silent
@@ -184,5 +189,6 @@ oh-my-terminal/
 
 - Inspired by [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 - Powered by [Oh My Posh](https://ohmyposh.dev)
+- Linux history completion powered by [ble.sh](https://github.com/akinomyoga/ble.sh)
 - Icons by [Terminal-Icons](https://github.com/devblackops/Terminal-Icons)
 - Fonts by [Nerd Fonts](https://www.nerdfonts.com)
