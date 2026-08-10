@@ -87,7 +87,7 @@
             "always_enabled": true
           },
           "style": "plain",
-          "template": "",
+          "template": "❯ ",
           "type": "status"
         }
       ],
@@ -100,7 +100,7 @@
     "foreground_templates": [
       "{{ if gt .Code 0 }}#F85149{{ end }}"
     ],
-    "template": ""
+    "template": "❯ "
   },
   "version": 4
 }
