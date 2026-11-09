@@ -181,6 +181,10 @@ oh-my-terminal/
 | `asserts/` | Theme preview screenshots. |
 | `oh-my-terminal.json` | Scoop manifest for installing via `scoop install`. |
 
+## FAQ
+
+See [FAQ.md](FAQ.md) for common issues and pitfalls (Windows encoding, slow font downloads in China, no-admin font install, PowerShell 5.1 vs 7, theme switching).
+
 ## License
 
 [MIT License](LICENSE)

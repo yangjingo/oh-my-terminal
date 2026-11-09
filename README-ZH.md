@@ -178,6 +178,10 @@ oh-my-terminal/
 | `asserts/` | 主题预览截图。 |
 | `oh-my-terminal.json` | Scoop 安装清单，可通过 `scoop install` 安装。 |
 
+## 常见问题
+
+常见问题与踩坑记录见 [FAQ.md](FAQ.md)（Windows 编码乱码、国内字体下载慢、无管理员权限装字体、PowerShell 5.1 与 7 的差异、主题切换等）。
+
 ## 许可证
 
 [MIT License](LICENSE)
