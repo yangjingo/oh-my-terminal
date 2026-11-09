@@ -20,9 +20,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 # --- 1. Permission and Environment Check ---
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Host "[Error] Please run this script as Administrator." -ForegroundColor Red
-    exit 1
+# Admin is optional: it is only required for system-wide font install.
+# Without admin, fonts fall back to per-user install (Windows 10 1809+).
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Host ">> Not running as Administrator. Fonts will be installed per-user (no admin needed)." -ForegroundColor Yellow
 }
 
 # Network detection
@@ -41,14 +43,14 @@ elseif ($ConfigMode -eq "Auto") {
 $repoUser = "yangjingo"
 $repoName = "oh-my-terminal"
 $rawUrl = "https://raw.githubusercontent.com/$repoUser/$repoName/main"
-if ($isCN) { $rawUrl = "https://ghproxy.com/$rawUrl" }
+if ($isCN) { $rawUrl = "https://gh-proxy.com/$rawUrl" }
 
 # --- 2. Dependency Management ---
 function Install-Dependency {
     param([string]$Name, [string]$Id)
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
         Write-Host "Installing dependency: $Name..." -ForegroundColor Cyan
-        winget install --id $Id --silent --accept-package-agreements --accept-source-agreements
+        winget install --id $Id --source winget --silent --accept-package-agreements --accept-source-agreements
     } else {
         Write-Host "Dependency already installed: $Name" -ForegroundColor Green
     }
@@ -58,15 +60,24 @@ Install-Dependency "oh-my-posh" "JanDeDobbeleer.OhMyPosh"
 Install-Dependency "git" "Git.Git"
 
 # --- 3. Font Installation ---
+# Installs system-wide when elevated; otherwise falls back to per-user install
+# (Windows 10 1809+), so no admin rights are required.
 function Install-NerdFont {
     param([string]$FontName = "FiraCode")
 
-    $fontsPath = "C:\Windows\Fonts"
-    $fontPattern = "$FontName*Nerd*Font*"
+    $systemFontsPath = "C:\Windows\Fonts"
+    $userFontsPath = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+    $userFontsRegPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
 
-    # Check if font already installed
-    $existingFonts = Get-ChildItem -Path $fontsPath -Filter "$FontName*" -ErrorAction SilentlyContinue
-    if ($existingFonts | Where-Object { $_.Name -match "Nerd" }) {
+    # Check if font already installed (system-wide or per-user)
+    $existingSystem = Get-ChildItem -Path $systemFontsPath -Filter "$FontName*" -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -match "Nerd" }
+    $existingUser = $false
+    if (Test-Path $userFontsPath) {
+        $existingUser = (Get-ChildItem -Path $userFontsPath -Filter "$FontName*" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match "Nerd" }) -ne $null
+    }
+    if ($existingSystem -or $existingUser) {
         Write-Host "Nerd Font already installed: $FontName" -ForegroundColor Green
         return
     }
@@ -75,7 +86,7 @@ function Install-NerdFont {
 
     $fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/$FontName.zip"
     if ($isCN) {
-        $fontUrl = "https://ghproxy.net/$fontUrl"
+        $fontUrl = "https://gh-proxy.com/$fontUrl"
     }
 
     $tempZip = "$env:TEMP\nerd-font.zip"
@@ -89,18 +100,33 @@ function Install-NerdFont {
         # Extract
         Expand-Archive -Path $tempZip -DestinationPath $extractPath -Force
 
-        # Install fonts
-        $shell = New-Object -ComObject Shell.Application
-        $fontsFolder = $shell.Namespace(0x14)
-
         $fontFiles = Get-ChildItem -Path $extractPath -Include "*.ttf", "*.otf" -Recurse |
-            Where-Object { $_.Name -match "NerdFont(Mono)?-\w+\.ttf$" }
+            Where-Object { $_.Name -match "NerdFont(Mono|Propo)?-\w+\.ttf$" }
 
-        foreach ($fontFile in $fontFiles) {
-            $destPath = "$fontsPath\$($fontFile.Name)"
-            if (-not (Test-Path $destPath)) {
-                $fontsFolder.CopyHere($fontFile.FullName, 0x10)
-                Write-Host "Installed: $($fontFile.Name)" -ForegroundColor Gray
+        if ($isAdmin) {
+            # System-wide install (requires elevation)
+            $shell = New-Object -ComObject Shell.Application
+            $fontsFolder = $shell.Namespace(0x14)
+
+            foreach ($fontFile in $fontFiles) {
+                $destPath = "$systemFontsPath\$($fontFile.Name)"
+                if (-not (Test-Path $destPath)) {
+                    $fontsFolder.CopyHere($fontFile.FullName, 0x10)
+                    Write-Host "Installed: $($fontFile.Name)" -ForegroundColor Gray
+                }
+            }
+        }
+        else {
+            # Per-user install (no admin required, Windows 10 1809+)
+            New-Item -ItemType Directory -Path $userFontsPath -Force | Out-Null
+            if (-not (Test-Path $userFontsRegPath)) { New-Item -Path $userFontsRegPath -Force | Out-Null }
+
+            foreach ($fontFile in $fontFiles) {
+                $destPath = Join-Path $userFontsPath $fontFile.Name
+                Copy-Item $fontFile.FullName $destPath -Force
+                $family = $fontFile.BaseName -replace "NerdFontPropo-", " Nerd Font Propo " -replace "NerdFontMono-", " Nerd Font Mono " -replace "NerdFont-", " Nerd Font "
+                New-ItemProperty -Path $userFontsRegPath -Name ($family + " (TrueType)") -Value $destPath -PropertyType String -Force | Out-Null
+                Write-Host "Installed (per-user): $($fontFile.Name)" -ForegroundColor Gray
             }
         }
 
@@ -142,7 +168,14 @@ if (-not (Test-Path $settingsPath)) {
 if (Test-Path $settingsPath) {
     Write-Host "Configuring Windows Terminal..." -ForegroundColor Cyan
 
-    $conf = Get-Content $settingsPath -Raw | ConvertFrom-Json
+    # Back up before touching the user's Terminal config
+    Copy-Item $settingsPath "$settingsPath.bak" -Force
+
+    # Read as explicit UTF-8: PS 5.1 defaults to the ANSI codepage (GBK on
+    # zh-CN systems), which corrupts non-ASCII text (e.g. Chinese profile
+    # names) and breaks the JSON. PS 7 is not affected.
+    $raw = [System.IO.File]::ReadAllText($settingsPath, [System.Text.Encoding]::UTF8)
+    $conf = $raw | ConvertFrom-Json
 
     # Set default profile font
     if (-not $conf.profiles) { $conf | Add-Member -MemberType NoteProperty -Name "profiles" -Value @{} -Force }
@@ -224,7 +257,9 @@ if (Test-Path $settingsPath) {
         $conf.profiles.defaults | Add-Member -MemberType NoteProperty -Name "colorScheme" -Value "Claude" -Force
     }
 
-    $conf | ConvertTo-Json -Depth 100 | Set-Content $settingsPath -Encoding utf8
+    # Write back as UTF-8 without BOM via .NET to preserve all non-ASCII text
+    $json = $conf | ConvertTo-Json -Depth 100
+    [System.IO.File]::WriteAllText($settingsPath, $json, (New-Object System.Text.UTF8Encoding $false))
     Write-Host "Windows Terminal configuration updated." -ForegroundColor Green
 }
 
@@ -235,14 +270,14 @@ $profileContent = @"
 oh-my-posh init pwsh --config '$themePath' | Invoke-Expression
 Import-Module Terminal-Icons
 
-# PSReadLine 自动补全和历史搜索
+# PSReadLine: fuzzy history search and menu completion
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 Set-PSReadLineKeyHandler -Key "Tab" -Function MenuComplete
 Set-PSReadLineKeyHandler -Key "Ctrl+RightArrow" -Function ForwardWord
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 
-# 命令联想预测（仅 PowerShell 7+ 支持）
+# Command prediction (PowerShell 7+ only)
 if (`$PSVersionTable.PSVersion.Major -ge 7) {
     Set-PSReadLineOption -PredictionSource History
 }
